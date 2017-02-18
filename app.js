@@ -1,13 +1,9 @@
 // Drum samples from
-// http://blog.imamusicmogul.com/2014/10/sample-saturdays-glitch-hop-drums/
-// http://produceruni.blogspot.com/2012/08/kanye-west-drum-kit.html
+// http://smd-records.com/tr808/?page_id=14
 // Howler.js
 // http://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library
 
 var App = {
-	kit: 'IAMM Kit 1',
-	parentFolder: 'IAMM Glitch Hop Sample Kit',
-	bass: 'IAMM_C1_BASS_DRUM.wav',
 	keys: {
 		// Directional keys
 		38: 'UP',	40: 'DOWN',	37: 'LEFT',	39: 'RIGHT',
@@ -36,58 +32,15 @@ var App = {
 		222: 'QUOTE',	192: 'TILDE',
 	},
 	
-	kit: {
-		directory: 'kit/',
-		instruments: {
-			'SPACE': {
-				name: 'Bass',
-				directory: 'Bass/',
-				file: ['bass29.wav', 'bass70.wav'],
-			},
-			'A': {
-				name: 'Clap',
-				directory: 'Clap/',
-				file: ['clap28.wav'],
-			},
-			'S': {
-				name: 'Kick',
-				directory: 'Kick/',
-				file: ['kick11.wav'],
-			},
-			'D': {
-				name: 'Snare',
-				directory: 'Snare/',
-				file: ['snare14.wav'],
-			},
-			'Q': {
-				name: 'Hi Hat',
-				directory: 'Perc/',
-				file: ['hi-hat63.wav', 'hi-hat64.wav'],
-			},
-			'E': {
-				name: 'Guitar',
-				directory: 'Soundz/',
-				file: ['guitar lick95.wav', 'guitar lick97.wav'],
-			},
-			'W': {
-				name: 'Piano',
-				directory: 'Piano/',
-				file: ['piano17.wav', 'piano52.wav'],
-			},
-		}
-	},
+	directory: 'kit/',
+	kit: {},
 	
 	init: function init() {
-		Keyboard.init({
-			parent: this,
-			handlers: this.keyHandler
-		});
-		
-		this.makeSounds();
+		//this.makeSounds();
 		this.bindKeys();
 	},
 	
-	getHowlOptions: function getHowlOptions(file) {
+	makeHowlOptions: function makeHowlOptions(file) {
 		return {
 			src: [file],
 			autoplay: false,
@@ -96,12 +49,22 @@ var App = {
 		}
 	},
 	
+	getKeyList: function getKeyList() {
+		if (this.keyList) return this.keyList;
+		var keyList = [];
+		Object.keys(this.keys).forEach(function(key) {
+			keyList.push(App.keys[key]);
+		});
+		this.keyList = keyList.join(' ');
+		return this.keyList;
+	},
+	
 	makeSounds: function makeSounds() {
-		Object.keys(this.kit.instruments).forEach(function(key) {
-			var instrument = App.kit.instruments[key];
+		Object.keys(this.kit).forEach(function(key) {
+			var instrument = App.kit[key];
 			instrument.file.forEach(function(file) {
 				var file = App.kit.directory + instrument.directory + file;
-				var options = App.getHowlOptions(file);
+				var options = App.makeHowlOptions(file);
 				instrument.sound = instrument.sound || [];
 				instrument.sound.push(new Howl(options));
 			});
@@ -111,14 +74,43 @@ var App = {
 	bindKeys: function bindKeys() {
 		$(window).off('keyup').on('keyup', function keyEvent(event) {
 			var key = event.keyCode;
-			if (key in App.keys && App.keys[key] in App.kit.instruments) {
+			if (key in App.keys && App.keys[key] in App.kit) {
 				var name = App.keys[key];
 				var which = 0;
-				if (App.kit.instruments[name].sound.length > 1) which = (event.shiftKey)?1:0;
-				App.kit.instruments[name].sound[which].play();
+				if (App.kit[name].sound.length > 1) which = (event.shiftKey)?1:0;
+				App.kit[name].sound[which].play();
 			}
 		});
-	}
+	},
+	
+	bindSoundToKey: function bindSoundToKey(key, name='Instrument', directory='', files=[]) {
+		this.getKeyList();
+		
+		if (this.keyList.indexOf(key) === -1) {
+			console.error(key, 'is not a valid key. Valid keys are:', this.keyList);
+			return false;
+		}
+		
+		var obj = {
+			name: name,
+			key: key,
+			directory: directory,
+			files: files,
+			sound: []
+		}
+		
+		if (obj.files.length) {
+			obj.files.forEach(function(name) {
+				var file = App.directory + obj.directory + name;
+				var options = App.makeHowlOptions(file);
+				obj.sound.push(new Howl(options));
+			});
+		}
+		
+		this.kit[key] = obj;
+		
+		return true;
+	},
 }
 
 App.init();
