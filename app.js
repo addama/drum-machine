@@ -1,5 +1,22 @@
 // Drum samples from
 // http://smd-records.com/tr808/?page_id=14
+// Bass Drum sounds start with “BD”.
+// Snare Drum sounds start with “SD”.
+// Low Tom sounds start with “LT”.
+// Mid Tom sounds start with “MT”.
+// Hi Tom sounds start with “HT”.
+// Low Conga sounds start with “LC”.
+// Mid Conga sounds start with “MC”.
+// Hi Conga sounds start with “HC”.
+// Rim Shot sound starts with “RS”.
+// Claves sounds starts with “CL”.
+// Hand Clap sound starts with “CP”.
+// Maracas sound starts with “MA”.
+// Cowbell sound starts with “CB”.
+// Cymbal sounds start with “CY”.
+// Open Hi Hat sounds start with “OH”.
+// Closed Hi Hat sound starts with “CH”.
+
 // Howler.js
 // http://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library
 
@@ -33,11 +50,15 @@ var App = {
 	},
 	
 	directory: 'kit/',
+	listenToElement: window,
+	textarea: '#text',
+	button: '#play',
 	kit: {},
 	
 	init: function init() {
-		//this.makeSounds();
-		this.bindKeys();
+		var dirCheck = this.directory.match(/\/$/);
+		if (dirCheck === null) this.directory += '/';
+		this.listen();
 	},
 	
 	makeHowlOptions: function makeHowlOptions(file) {
@@ -52,35 +73,36 @@ var App = {
 	getKeyList: function getKeyList() {
 		if (this.keyList) return this.keyList;
 		var keyList = [];
-		Object.keys(this.keys).forEach(function(key) {
+		Object.keys(this.keys).forEach(function reduceKeyList(key) {
 			keyList.push(App.keys[key]);
 		});
 		this.keyList = keyList.join(' ');
 		return this.keyList;
 	},
-	
-	makeSounds: function makeSounds() {
-		Object.keys(this.kit).forEach(function(key) {
-			var instrument = App.kit[key];
-			instrument.file.forEach(function(file) {
-				var file = App.kit.directory + instrument.directory + file;
-				var options = App.makeHowlOptions(file);
-				instrument.sound = instrument.sound || [];
-				instrument.sound.push(new Howl(options));
-			});
-		});
-	},
-	
-	bindKeys: function bindKeys() {
-		$(window).off('keyup').on('keyup', function keyEvent(event) {
+
+	listen: function listen() {
+		$(this.listenToElement).off('keyup').on('keyup', function keyEvent(event) {
 			var key = event.keyCode;
 			if (key in App.keys && App.keys[key] in App.kit) {
 				var name = App.keys[key];
 				var which = 0;
 				if (App.kit[name].sound.length > 1) which = (event.shiftKey)?1:0;
-				App.kit[name].sound[which].play();
+				App.playSound(name, which);
 			}
 		});
+		
+		$(this.button).off('click').on('click', function playButton() {
+			var beats = $(App.textarea).val().split('');
+			console.log(text);
+			beats.forEach(function(beat) {
+				if (beat === ' ') beat = 'SPACE';
+				App.playSound(beat.toUpperCase());
+			});
+		});
+	},
+	
+	playSound: function playSound(key, which=0) {
+		this.kit[key].sound[which].play();
 	},
 	
 	bindSoundToKey: function bindSoundToKey(key, name='Instrument', directory='', files=[]) {
@@ -91,6 +113,16 @@ var App = {
 			return false;
 		}
 		
+		if (typeof files === 'string') files = [ files ];
+		if (files.length > 2) {
+			files.length = 2;
+			console.warn('Only 2 samples can be bound to each key: one normal keypress, \
+			and one keypress modified by shift. Additional samples are ignored.');
+		}
+		
+		var dirCheck = directory.match(/\/$/);
+		if (dirCheck === null) directory += '/';
+		
 		var obj = {
 			name: name,
 			key: key,
@@ -100,7 +132,7 @@ var App = {
 		}
 		
 		if (obj.files.length) {
-			obj.files.forEach(function(name) {
+			obj.files.forEach(function makeHowlSounds(name) {
 				var file = App.directory + obj.directory + name;
 				var options = App.makeHowlOptions(file);
 				obj.sound.push(new Howl(options));

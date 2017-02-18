@@ -4,11 +4,18 @@
 <head></head>
 	
 <body>
+	<div id='main'>
+		<textarea id='text'></textarea>
+		<button id='play'>Play</button>
+	</div>
+	
 	<script type='text/javascript' src='selectah.js'></script>
 	<script type='text/javascript' src='howler.min.js'></script>
 	<script type='text/javascript' src='app.js'></script>
 	<script type='text/javascript'>
-		App.bindSoundToKey('SPACE', 'Bass', 'BD/', ['BD0000.WAV', 'BD5050.WAV']);
+		App.bindSoundToKey('S', 'Bass', 'BD/', ['BD5050.WAV','BD0000.WAV']);
+		App.bindSoundToKey('A', 'Cow Bell', 'CB/', ['CB.WAV']);
+		App.bindSoundToKey('D', 'Hi-Hat', 'HH', ['CH.WAV','OH50.WAV']);
 		
 	</script>
 </body>
