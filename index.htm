@@ -4,18 +4,21 @@
 <head></head>
 	
 <body>
-	<div id='main'>
-		<textarea id='text'></textarea>
-		<button id='play'>Play</button>
-	</div>
+	<div id='main'></div>
 	
 	<script type='text/javascript' src='selectah.js'></script>
 	<script type='text/javascript' src='howler.min.js'></script>
 	<script type='text/javascript' src='app.js'></script>
 	<script type='text/javascript'>
-		App.bindSoundToKey('S', 'Bass', 'BD/', ['BD5050.WAV','BD0000.WAV']);
+		App.bindSoundToKey('S', 'Bass Drum', 'BD/', ['BD5050.WAV','BD0000.WAV']);
 		App.bindSoundToKey('A', 'Cow Bell', 'CB/', ['CB.WAV']);
-		App.bindSoundToKey('D', 'Hi-Hat', 'HH', ['CH.WAV','OH50.WAV']);
+		App.bindSoundToKey('D', 'Hi-Hat', 'HH/', ['CH.WAV','OH50.WAV']);
+		App.bindSoundToKey('Q', 'Cymbal', 'CY/', ['CY0000.WAV','CY5050.WAV']);
+		App.bindSoundToKey('E', 'Rimshot', 'RS/', ['RS.WAV']);
+		App.bindSoundToKey('W', 'Claves', 'CL/', ['CL.WAV']);
+		App.bindSoundToKey('Z', 'Low Tom', 'LT/', ['LT50.WAV', 'LT00.WAV']);
+		App.bindSoundToKey('X', 'Mid Tom', 'MT/', ['MT50.WAV', 'MT00.WAV']);
+		App.bindSoundToKey('C', 'High Tom', 'HT/', ['HT50.WAV', 'HT00.WAV']);
 		
 	</script>
 </body>

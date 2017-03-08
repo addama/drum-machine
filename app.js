@@ -90,15 +90,6 @@ var App = {
 				App.playSound(name, which);
 			}
 		});
-		
-		$(this.button).off('click').on('click', function playButton() {
-			var beats = $(App.textarea).val().split('');
-			console.log(text);
-			beats.forEach(function(beat) {
-				if (beat === ' ') beat = 'SPACE';
-				App.playSound(beat.toUpperCase());
-			});
-		});
 	},
 	
 	playSound: function playSound(key, which=0) {
